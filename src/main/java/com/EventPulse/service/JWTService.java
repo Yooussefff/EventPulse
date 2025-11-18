@@ -1,6 +1,7 @@
 package com.EventPulse.service;
 
 import com.EventPulse.entities.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,9 +24,13 @@ public class JWTService {
     @Value("${jwt.issuer}")
     private String issuer;
 
-    public String generateToken(User user) {
-        Key hmacKey = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
+    private Key getSigningKey() {
+        return new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8),
                 SignatureAlgorithm.HS256.getJcaName());
+    }
+
+    public String generateToken(User user) {
+        Key key = getSigningKey();
 
         return Jwts.builder()
                 .setIssuer(issuer)
@@ -34,7 +39,22 @@ public class JWTService {
                 .claim("role", user.getRole().name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(hmacKey, SignatureAlgorithm.HS256)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public Claims validateToken(String token) {
+        try {
+            Key key = getSigningKey();
+
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+        } catch (Exception e) {
+            return null; // invalid token
+        }
     }
 }
