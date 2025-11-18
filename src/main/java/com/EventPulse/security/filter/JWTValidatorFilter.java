@@ -28,7 +28,7 @@ public class JWTValidatorFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        if (header != null && header.startsWith("Bearer ")) {
+        if (header != null && header.toLowerCase().startsWith("bearer ")) {
             String token = header.substring(7).trim();
             try {
                 Claims claims = jwtService.validateToken(token);
@@ -37,8 +37,8 @@ public class JWTValidatorFilter extends OncePerRequestFilter {
                     return;
                 }
 
-                String username = String.valueOf(claims.get("username"));
-                String role = String.valueOf(claims.get("role"));
+                String username = claims.get("username", String.class);
+                String role = claims.get("role", String.class);
 
                 String springRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
 
