@@ -9,6 +9,7 @@ import com.EventPulse.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -18,13 +19,14 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
 
+    @Transactional
     public AuthResponse signup(SignupRequest request) {
         if(userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new IllegalArgumentException("Email already exists");
         }
 
         if(userRepository.findByUserName(request.getUserName()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new IllegalArgumentException("Username already exists");
         }
 
         User user = User.builder()
@@ -46,14 +48,15 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest loginRequest) {
         User user = userRepository.findByEmailOrUserName(
                         loginRequest.getEmailOrUserName(),
                         loginRequest.getEmailOrUserName())
-                .orElseThrow(() -> new RuntimeException("Invalid email or username or password"));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid credentials"));
 
         if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid email or password");
+            throw new IllegalArgumentException("Invalid credentials");
         }
 
         return AuthResponse.builder()
