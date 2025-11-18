@@ -1,4 +1,4 @@
-package com.EventPulse.security;
+package com.EventPulse.security.config;
 
 import com.EventPulse.security.filter.JWTValidatorFilter;
 import lombok.AllArgsConstructor;
