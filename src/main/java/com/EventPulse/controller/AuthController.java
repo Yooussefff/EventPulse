@@ -22,18 +22,18 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<AuthResponse>> signup(@RequestBody SignupRequest signupRequest) {
         AuthResponse authResponse = authService.signup(signupRequest);
-        return ResponseEntity.ok(new ApiResponse<>(authResponse));
+        return ResponseEntity.ok(new ApiResponse<>("Signup successful", authResponse));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@RequestBody LoginRequest loginRequest) {
         AuthResponse authResponse = authService.login(loginRequest);
-        return ResponseEntity.ok(new ApiResponse<>(authResponse));
+        return ResponseEntity.ok(new ApiResponse<>("Login successful", authResponse));
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody @Valid EmailRequest request) {
         otpService.sendPasswordResetOtp(request.getEmail());
-        return ResponseEntity.ok(new ApiResponse<>("Password reset OTP sent to email."));
+        return ResponseEntity.ok(new ApiResponse<>("Password reset OTP sent to email", null));
     }
 }
