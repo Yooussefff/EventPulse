@@ -23,7 +23,7 @@ public class AuthService {
             throw new RuntimeException("Email already exists");
         }
 
-        if(userRepository.findByUsername(request.getUserName()).isPresent()) {
+        if(userRepository.findByUserName(request.getUserName()).isPresent()) {
             throw new RuntimeException("Username already exists");
         }
 
