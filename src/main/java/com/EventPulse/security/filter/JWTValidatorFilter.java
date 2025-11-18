@@ -40,12 +40,10 @@ public class JWTValidatorFilter extends OncePerRequestFilter {
                 String username = claims.get("username", String.class);
                 String role = claims.get("role", String.class);
 
-                String springRole = role.startsWith("ROLE_") ? role : "ROLE_" + role;
-
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         username,
                         null,
-                        AuthorityUtils.commaSeparatedStringToAuthorityList(springRole)
+                        AuthorityUtils.commaSeparatedStringToAuthorityList(role)
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
